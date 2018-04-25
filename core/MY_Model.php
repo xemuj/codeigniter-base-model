@@ -26,6 +26,8 @@ class MY_Model extends CI_Model
      * without overwriting CI's global $this->db connection.
      */
     public $_database;
+    
+    protected $_db_group;
 
     /**
      * This model's default primary key or unique identifier.
@@ -105,7 +107,7 @@ class MY_Model extends CI_Model
 
         $this->_fetch_table();
 
-        $this->_database = $this->db;
+        $this->_database = empty($this->_db_group) ? $this->db : $this->load->database($this->_db_group, TRUE);
 
         array_unshift($this->before_create, 'protect_attributes');
         array_unshift($this->before_update, 'protect_attributes');
@@ -173,7 +175,35 @@ class MY_Model extends CI_Model
 
         return $this->get_all();
     }
-
+    
+    /**
+     * This method enables you to generate LIKE clauses, useful for doing searches.
+     */
+    public function like($key, $value = NULL, $wildcard = 'both')
+    {
+        if (is_array($key)) {
+            $this->_database->like($key, $wildcard);
+        }else{
+            $this->_database->like($key, $value, $wildcard);
+        }
+        
+        return $this->get_all();
+    }
+    
+    /**
+     * This method enables you to generate NOT LIKE clauses, useful for doing searches.
+     */
+    public function not_like($key, $value = NULL, $wildcard = 'both')
+    {
+        if (is_array($key)) {
+            $this->_database->not_like($key, $wildcard);
+        }else{
+            $this->_database->not_like($key, $value, $wildcard);
+        }
+        
+        return $this->get_all();
+    }
+    
     /**
      * Fetch all the records in the table. Can be used as a generic call
      * to $this->_database->get() with scoped methods.
