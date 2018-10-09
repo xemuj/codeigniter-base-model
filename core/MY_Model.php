@@ -724,7 +724,9 @@ class MY_Model extends CI_Model
     {
         foreach ($this->callback_parameters as $column)
         {
+            if ($row[$column] != '') {
             $row[$column] = serialize($row[$column]);
+            }
         }
 
         return $row;
